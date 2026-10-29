@@ -3,6 +3,8 @@ import DocumentUpload from "./DocumentUpload.jsx";
 
 export default function ApplicationDetail({ application, onChange }) {
   const submitted = application.submitted_documents;
+  const received = REQUIRED_DOCUMENTS.filter((document) => submitted.includes(document)).length;
+  const complete = received === REQUIRED_DOCUMENTS.length;
 
   return (
     <>
@@ -38,11 +40,11 @@ export default function ApplicationDetail({ application, onChange }) {
       <h3>
         Documents
         <span className="muted">
-          {submitted.length} of {REQUIRED_DOCUMENTS.length} received
+          {received} of {REQUIRED_DOCUMENTS.length} received
         </span>
       </h3>
       <div className="progress">
-        <span style={{ width: `${(submitted.length / REQUIRED_DOCUMENTS.length) * 100}%` }} />
+        <span style={{ width: `${(received / REQUIRED_DOCUMENTS.length) * 100}%` }} />
       </div>
       <ul className="checklist">
         {REQUIRED_DOCUMENTS.map((document) => (
@@ -53,7 +55,19 @@ export default function ApplicationDetail({ application, onChange }) {
       </ul>
 
       {/* The key gives each application a fresh, empty upload box. */}
-      <DocumentUpload key={application.application_id} applicationId={application.application_id} onUploaded={onChange} />
+      {complete ? (
+        <div className="documents-complete" role="status">
+          <span className="complete-icon" aria-hidden="true">✓</span>
+          <div><h3>All required documents received</h3>
+            <p>No more uploads needed. Document review and loan approval are separate steps.</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          {received === 0 && <p className="documents-empty">No documents yet. Add an identity proof, salary slip and bank statement to get started.</p>}
+          <DocumentUpload key={application.application_id} applicationId={application.application_id} onUploaded={onChange} />
+        </>
+      )}
     </>
   );
 }

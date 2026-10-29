@@ -1,8 +1,4 @@
-"""MCP server: wraps the app server's REST API as MCP tools. It has no database of its own.
-
-Run: .venv/bin/python -m mcp_server.server   (start the app server first)
-"""
-
+import json
 from typing import Any, Literal
 
 import httpx
@@ -65,9 +61,41 @@ def create_application(
 def submit_document(application_id: str, document_text: str) -> dict[str, Any]:
     """Submit a document for an application. Pass the document text exactly as the user gave it.
     A local model identifies the document type and owner. Returns outcome accepted (with the
-    remaining missing_documents) or rejected (with a reason). This checks the type only,
-    not authenticity."""
+    remaining missing_documents) or rejected (with a reason and validation checks). Checks
+    document type, applicant name and salary net income against the application, not authenticity."""
     return call_app_server("POST", f"/applications/{application_id}/documents", json={"document_text": document_text})
+
+
+@mcp.resource("los://rules", title="Loan rules", mime_type="application/json")
+def loan_rules() -> str:
+    """Loan types, what each status means, and the required applicant details and documents."""
+    return json.dumps(call_app_server("GET", "/rules"))
+
+
+@mcp.resource("los://applications/{application_id}", title="Loan application", mime_type="application/json")
+def application(application_id: str) -> str:
+    """One loan application, for example the one the loan officer has open."""
+    return json.dumps(call_app_server("GET", f"/applications/{application_id}"))
+
+
+@mcp.prompt(title="Review application")
+def review_application(application_id: str) -> str:
+    """Summarise an application and suggest the officer's next step."""
+    return (
+        f"Review loan application {application_id} (look it up unless it is attached). Reply with: "
+        "a one-line summary of the applicant and loan, the status, any missing documents, and the next step "
+        "for the loan officer. Do not decide approval."
+    )
+
+
+@mcp.prompt(title="Request missing documents")
+def request_missing_documents(application_id: str) -> str:
+    """Draft an email asking the applicant for the documents still missing."""
+    return (
+        f"Using loan application {application_id} (look it up unless it is attached), draft a short, polite "
+        "email to the applicant asking for each missing document by its plain name. If nothing is missing, "
+        "say so instead of drafting an email."
+    )
 
 
 if __name__ == "__main__":

@@ -38,7 +38,9 @@ export default function ApplicationList({ applications, selectedId, onSelect }) 
           <li key={application.application_id}>
             <button
               className={application.application_id === selectedId ? "card selected" : "card"}
-              onClick={() => onSelect(application.application_id)}
+              aria-pressed={application.application_id === selectedId}
+              title={application.application_id === selectedId ? "Click again to deselect" : "Select application"}
+              onClick={() => onSelect(application.application_id === selectedId ? null : application.application_id)}
             >
               <span className="card-top">
                 <strong>{application.full_name}</strong>

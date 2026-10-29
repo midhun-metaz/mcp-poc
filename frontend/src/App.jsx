@@ -7,7 +7,7 @@ import NewApplicationForm from "./components/NewApplicationForm.jsx";
 
 export default function App() {
   const [applications, setApplications] = useState([]);
-  const [selectedId, setSelectedId] = useState("LOS-1001");
+  const [selectedId, setSelectedId] = useState(null);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState(null);
 
@@ -65,11 +65,16 @@ export default function App() {
           ) : selected ? (
             <ApplicationDetail application={selected} onChange={refresh} />
           ) : (
-            <p className="muted">Select an application.</p>
+            <div className="application-empty">
+              <span className="empty-icon" aria-hidden="true">✦</span>
+              <h2>Your workspace, your starting point</h2>
+              <p>Chat with Copilot to look up applications or create a draft. Select an applicant on the left when you want to review their details.</p>
+              <span className="document-tag">No application selected</span>
+            </div>
           )}
         </section>
 
-        <ChatPanel onReply={refresh} />
+        <ChatPanel application={creating ? null : selected} onReply={refresh} onClearApplication={() => select(null)} />
       </main>
     </div>
   );

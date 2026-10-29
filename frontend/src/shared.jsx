@@ -1,5 +1,3 @@
-// Small helpers shared by the components.
-
 export const REQUIRED_DOCUMENTS = ["identity_proof", "salary_slip", "bank_statement"];
 
 // "awaiting_documents" -> "Awaiting documents"

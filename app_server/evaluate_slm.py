@@ -1,8 +1,3 @@
-"""Measure the local document model's accuracy and speed on synthetic documents. Needs Ollama running.
-
-Run: .venv/bin/python -m app_server.evaluate_slm
-"""
-
 import time
 
 from app_server import slm

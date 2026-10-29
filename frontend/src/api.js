@@ -1,5 +1,3 @@
-// Calls to the Python servers. Vite forwards /api to the app server and /chat to the copilot chat API.
-
 async function request(method, path, body) {
   const response = await fetch(path, {
     method,
@@ -25,14 +23,18 @@ export async function submitPdf(applicationId, file) {
   return readJson(await fetch(`/api/applications/${applicationId}/documents/pdf`, { method: "POST", body: form }));
 }
 
-// Streams one chat turn. The server sends one JSON line per event: tool_started, tool_finished,
-// then answer or error. onEvent is called for each line as soon as it arrives.
-// host is "gemini" (cloud LLM) or "local" (small model in Ollama).
-export async function chat(conversationId, host, message, onEvent) {
+// MCP prompts the copilot offers, such as "Review application".
+export const listPrompts = () => request("GET", "/chat/prompts");
+
+// Streams one chat turn. The server sends one JSON line per event: context (the MCP resources it attached),
+// tool_started, tool_finished, then answer or error, then suggestions (follow-up questions).
+// onEvent is called for each line as soon as it arrives.
+// applicationId is the application open in the UI; prompt is the name of an MCP prompt the user picked.
+export async function chat(conversationId, message, { applicationId, prompt }, onEvent) {
   const response = await fetch("/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ conversation_id: conversationId, host, message }),
+    body: JSON.stringify({ conversation_id: conversationId, message, application_id: applicationId, prompt }),
   });
   if (!response.ok) {
     onEvent({ type: "error", message: `Server error ${response.status}. Is the copilot chat API running?` });

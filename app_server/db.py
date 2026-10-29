@@ -1,7 +1,7 @@
-"""SQLite storage and loan rules. All data is synthetic."""
-
 import json
 import sqlite3
+
+from app_server.validation import validate_document
 
 DB_PATH = "los.db"
 
@@ -30,6 +30,28 @@ SAMPLE_APPLICATIONS = [
         "tenure_months": 240,
         "status": "under_review",
         "submitted_documents": ["identity_proof", "salary_slip", "bank_statement"],
+    },
+    {
+        "application_id": "LOS-1003",
+        "full_name": "Priya Das",
+        "email": "priya.das@example.com",
+        "monthly_income": 65000,
+        "loan_type": "personal",
+        "loan_amount": 300000,
+        "tenure_months": 24,
+        "status": "draft",
+        "submitted_documents": [],
+    },
+    {
+        "application_id": "LOS-1004",
+        "full_name": "Karan Shah",
+        "email": "karan.shah@example.com",
+        "monthly_income": 70000,
+        "loan_type": "auto",
+        "loan_amount": 800000,
+        "tenure_months": 60,
+        "status": "awaiting_documents",
+        "submitted_documents": ["identity_proof", "salary_slip"],
     },
 ]
 
@@ -128,19 +150,36 @@ def create_application(applicant):
     return {"outcome": "created", "application_id": application_id}
 
 
-def add_document(application_id, analysis):
-    """Record a document read by the local model if it is a required type."""
+def add_document(application_id, analysis, filename=None):
+    """Count a required document only after applicant consistency checks pass."""
     result = {"application_id": application_id, "analysis": analysis}
     if analysis["document_type"] not in REQUIRED_DOCUMENTS:
         return {**result, "outcome": "rejected", "reason": "This is not a required loan document."}
 
-    submitted = get_application(application_id)["submitted_documents"]
-    if analysis["document_type"] not in submitted:
+    application = get_application(application_id)
+    checks = validate_document(application, analysis, filename)
+    result["validation_checks"] = checks
+    failed = [check["label"] for check in checks if check["status"] == "failed"]
+    if failed:
+        return {**result, "outcome": "rejected",
+                "reason": "Could not verify: " + ", ".join(failed) + ". Check the document and application details before resubmitting."}
+
+    # Serialize the check and update so simultaneous uploads cannot both succeed
+    # or overwrite another document type added by a concurrent request.
+    with connect() as connection:
+        connection.execute("BEGIN IMMEDIATE")
+        row = connection.execute(
+            "SELECT submitted_documents FROM applications WHERE application_id = ?", (application_id,)
+        ).fetchone()
+        submitted = json.loads(row["submitted_documents"])
+        if analysis["document_type"] in submitted:
+            label = analysis["document_type"].replace("_", " ")
+            return {**result, "outcome": "rejected", "code": "duplicate_document",
+                    "reason": f"A {label} has already been submitted for this application. Duplicate uploads are not allowed."}
         submitted.append(analysis["document_type"])
-        with connect() as connection:
-            connection.execute(
-                "UPDATE applications SET submitted_documents = ? WHERE application_id = ?",
-                (json.dumps(submitted), application_id),
-            )
+        connection.execute(
+            "UPDATE applications SET submitted_documents = ? WHERE application_id = ?",
+            (json.dumps(submitted), application_id),
+        )
     missing = [document for document in REQUIRED_DOCUMENTS if document not in submitted]
     return {**result, "outcome": "accepted", "missing_documents": missing}

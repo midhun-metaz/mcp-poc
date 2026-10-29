@@ -1,8 +1,3 @@
-"""Create realistic-looking sample PDFs for the demo. All names, companies and numbers are fictional.
-
-Run: .venv/bin/python samples/make_sample_pdfs.py   (writes the PDFs next to this file)
-"""
-
 from pathlib import Path
 
 from reportlab.lib import colors

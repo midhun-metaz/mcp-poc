@@ -1,8 +1,3 @@
-"""App server: the loan system's REST API. Only this server touches the database and the document model.
-
-Run: .venv/bin/python -m app_server.main   then open http://127.0.0.1:8001/docs to try the API
-"""
-
 from typing import Literal
 
 import httpx
@@ -32,6 +27,27 @@ class Document(BaseModel):
     document_text: str
 
 
+@app.get("/rules")
+def rules():
+    """The loan rules this system checks."""
+    return {
+        "loan_types": ["personal", "home", "auto"],
+        "statuses": {
+            "draft": "Created, not yet submitted",
+            "awaiting_documents": "Submitted; waiting for required documents from the applicant",
+            "under_review": "Submitted; waiting for an officer's decision",
+        },
+        "required_fields": db.REQUIRED_FIELDS,
+        "required_documents": db.REQUIRED_DOCUMENTS,
+        "currency": "INR",
+        "notes": [
+            "Adding a document does not change the status.",
+            "Only one document per type is allowed for each application; duplicate submissions are rejected.",
+            "New documents are checked for type, applicant name, salary net income and recognizable filename type conflicts; not authenticity or loan eligibility.",
+        ],
+    }
+
+
 @app.get("/applications")
 def list_applications(status: Literal["draft", "awaiting_documents", "under_review"] | None = None):
     return db.list_applications(status)
@@ -50,7 +66,7 @@ def create_application(applicant: NewApplication):
     return db.create_application(applicant.model_dump())
 
 
-def read_and_save_document(application_id, text):
+def read_and_save_document(application_id, text, filename=None):
     """Let the local model read the document text, then record it if it is a required document."""
     if db.get_application(application_id) is None:
         raise HTTPException(404, f"Application {application_id} not found.")
@@ -61,7 +77,7 @@ def read_and_save_document(application_id, text):
         raise HTTPException(503, f"The local document model failed: {error.response.text}")
     except httpx.HTTPError:
         raise HTTPException(503, "The local document model is not reachable. Is `ollama serve` running?")
-    return db.add_document(application_id, analysis)
+    return db.add_document(application_id, analysis, filename)
 
 
 @app.post("/applications/{application_id}/documents")
@@ -78,7 +94,7 @@ def submit_pdf(application_id: str, file: UploadFile):
     if not text.strip():
         # Scanned PDFs are images with no text layer; reading them would need OCR or a vision model.
         raise HTTPException(422, "No text found in this PDF. Scanned PDFs are not supported in this POC.")
-    return {**read_and_save_document(application_id, text), "extracted_text": text}
+    return {**read_and_save_document(application_id, text, file.filename), "extracted_text": text}
 
 
 if __name__ == "__main__":
