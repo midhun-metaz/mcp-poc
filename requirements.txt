@@ -1,0 +1,17 @@
+# Python 3.11+
+# Official MCP SDK: server and client.
+mcp==2.3.0
+# App server and copilot chat API.
+fastapi==0.162.0
+uvicorn==0.54.0
+# Official Google Gen AI SDK for the Gemini agent.
+google-genai==2.33.0
+# Loads settings such as GEMINI_API_KEY from .env.
+python-dotenv==1.2.4
+# HTTP calls: MCP server -> app server, app server -> Ollama.
+httpx==0.28.1
+# Reads the text of uploaded PDFs (python-multipart handles the upload).
+pypdf==6.21.4
+python-multipart==0.0.32
+# Only for samples/make_sample_pdfs.py, which creates the sample PDFs.
+reportlab==5.1.0

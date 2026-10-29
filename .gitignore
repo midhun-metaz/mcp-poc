@@ -1,0 +1,21 @@
+# Python
+.venv/
+.local/
+__pycache__/
+
+# Secrets: only the template is shared.
+.env
+
+# SQLite data (recreated from the sample applications)
+los.db
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Keep these files local to this workspace.
+LEARNING_PROGRESS.md
+.aws/
+.claude/
+.codex/
+.agents/

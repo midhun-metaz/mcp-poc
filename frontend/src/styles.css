@@ -1,0 +1,675 @@
+/* Colours for light and dark themes. */
+:root {
+  color-scheme: light dark;
+  --bg: #f4f6fa;
+  --panel: #ffffff;
+  --text: #1b2333;
+  --muted: #667085;
+  --border: #e3e7ee;
+  --primary: #2563eb;
+  --accent: #2563eb;
+  --accent-soft: #e8efff;
+  --success: #15803d;
+  --success-soft: #e7f6ec;
+  --warning: #b45309;
+  --warning-soft: #fdf3e2;
+  --danger: #b42318;
+  --danger-soft: #fdecea;
+
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1420;
+    --panel: #171d2b;
+    --text: #e6e9f0;
+    --muted: #98a2b3;
+    --border: #2a3242;
+    --accent: #8fb3ff;
+    --accent-soft: #1e2a47;
+    --success: #4ade80;
+    --success-soft: #12301f;
+    --warning: #fbbf24;
+    --warning-soft: #33270f;
+    --danger: #f87171;
+    --danger-soft: #3a1717;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1 {
+  font-size: 18px;
+}
+
+h2 {
+  font-size: 16px;
+}
+
+h3 {
+  font-size: 14px;
+  margin-top: 20px;
+}
+
+h3 .muted {
+  margin-left: 8px;
+  font-weight: normal;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+code,
+pre {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+pre {
+  margin: 6px 0 0;
+  padding: 8px;
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 12px;
+  overflow: auto;
+}
+
+/* Controls */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+button:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+button.primary {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent-soft);
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* Page layout: list | detail | chat */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.topbar p {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.banner {
+  margin: 12px 20px 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.layout {
+  display: grid;
+  flex: 1;
+  grid-template-columns: 320px minmax(0, 1fr) 440px;
+  gap: 16px;
+  min-height: 0;
+  padding: 16px 20px;
+}
+
+.panel {
+  min-height: 0;
+  padding: 16px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+}
+
+/* Chips: list filters and sample questions */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.chip.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* Application list */
+.count {
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 12px;
+}
+
+.search {
+  margin: 12px 0 8px;
+}
+
+.cards {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.card.selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge.draft {
+  background: var(--border);
+  color: var(--muted);
+}
+
+.badge.awaiting_documents {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.badge.under_review {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+/* Application detail */
+.detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.detail-head h2 {
+  font-size: 20px;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 16px 0 0;
+}
+
+.facts div {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.facts dt {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.facts dd {
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.progress {
+  height: 8px;
+  margin: 8px 0;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--border);
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  background: var(--success);
+  transition: width 0.3s;
+}
+
+.checklist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checklist li {
+  padding: 4px 10px;
+  border: 1px dashed var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.checklist li.done {
+  border-style: solid;
+  border-color: var(--success);
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+/* Document upload and results */
+.upload {
+  display: grid;
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+.dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border: 1.5px dashed var(--border);
+  border-radius: 10px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.dropzone:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.dropzone input {
+  display: none;
+}
+
+.samples {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.sample {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sample span {
+  flex: 1;
+}
+
+.sample a,
+button.link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.upload .primary {
+  justify-self: start;
+}
+
+.result {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.result.accepted {
+  background: var(--success-soft);
+  color: var(--success);
+}
+
+.result.rejected {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.result.failed {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+summary {
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* New application form */
+.new-form {
+  display: grid;
+  gap: 12px;
+  max-width: 560px;
+}
+
+.new-form label {
+  display: grid;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Chat */
+.chat {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+.chat-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.chat-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Gemini / Local SLM switch */
+.switch {
+  display: inline-flex;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.switch button {
+  padding: 6px 10px;
+  white-space: nowrap;
+  border: none;
+  border-radius: 0;
+  font-size: 12px;
+}
+
+.switch button.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.answered-by {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.messages {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  overflow: auto;
+}
+
+.welcome {
+  display: grid;
+  gap: 8px;
+}
+
+/* Before the first message, the sample questions are a list of full-width buttons. */
+.welcome .chips {
+  flex-direction: column;
+  margin-top: 8px;
+}
+
+.welcome .chip {
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  text-align: left;
+}
+
+.message {
+  display: grid;
+  gap: 6px;
+  max-width: 90%;
+}
+
+.message.user {
+  align-self: flex-end;
+}
+
+.bubble {
+  padding: 10px 12px;
+  border-radius: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.message.user .bubble {
+  border-bottom-right-radius: 4px;
+  background: var(--primary);
+  color: #fff;
+  white-space: pre-wrap;
+}
+
+.message.assistant .bubble {
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 4px;
+  background: var(--bg);
+}
+
+.bubble p + p,
+.bubble ul,
+.bubble ol {
+  margin: 6px 0 0;
+}
+
+.bubble ul,
+.bubble ol {
+  padding-left: 20px;
+}
+
+.step {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--accent-soft);
+  font-size: 12px;
+}
+
+.step.failed {
+  background: var(--danger-soft);
+}
+
+.thinking {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.chips.scroll {
+  flex-wrap: nowrap;
+  padding: 8px 16px 0;
+  overflow-x: auto;
+}
+
+.chips.scroll .chip {
+  flex: none;
+}
+
+.composer {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 12px 16px 16px;
+}
+
+.composer textarea {
+  resize: none;
+}
+
+/* Smaller screens: chat goes below; phones get one column. */
+@media (max-width: 1180px) {
+  .app {
+    height: auto;
+  }
+
+  .layout {
+    grid-template-columns: 300px minmax(0, 1fr);
+  }
+
+  .chat {
+    grid-column: 1 / -1;
+    height: 640px;
+  }
+}
+
+@media (max-width: 720px) {
+  .topbar,
+  .layout {
+    padding: 12px;
+  }
+
+  .layout,
+  .row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* A tool step that is still running pulses. */
+.step.running {
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
